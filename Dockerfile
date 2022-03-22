@@ -24,4 +24,4 @@ FROM alpine:latest
 COPY --from=build-env /go/bin/eventrouter /go/bin/eventrouter
 RUN apk add gcompat
 EXPOSE 8080/tcp
-CMD ["/go/bin/eventrouter", "-v", "5", "-logtostderr"]
+CMD ["/go/bin/eventrouter", "-v", "3", "-logtostderr"]
