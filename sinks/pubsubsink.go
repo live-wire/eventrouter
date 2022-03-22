@@ -32,6 +32,7 @@ func NewPubSubSink(ctx context.Context, projectId string, topic string) (*PubSub
 
 	return &PubSubSink{
 		ProjectId:  projectId,
+		client:     client,
 		topic:      clientTopic,
 		deadLetter: nil,
 	}, nil
