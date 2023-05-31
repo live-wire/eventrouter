@@ -6,6 +6,7 @@ import (
 	"fmt"
 
 	"cloud.google.com/go/pubsub"
+	"github.com/tidwall/gjson"
 	v1 "k8s.io/api/core/v1"
 )
 
@@ -56,9 +57,16 @@ func NewPubSubSinkWithDeadLetter(ctx context.Context, projectId string, topic st
 }
 
 func (x *PubSubSink) publishAsync(ctx context.Context, message []byte, topic *pubsub.Topic) *pubsub.PublishResult {
-	return topic.Publish(ctx, &pubsub.Message{
+	var kind = gjson.Get(string(message), "event.involvedObject.kind")
+	var pubsubMessage = &pubsub.Message{
 		Data: message,
-	})
+	}
+	if kind.Exists() {
+		pubsubMessage.Attributes = map[string]string{
+			"kind": kind.String(),
+		}
+	}
+	return topic.Publish(ctx, pubsubMessage)
 }
 
 func (x *PubSubSink) publishSync(ctx context.Context, message []byte, topic *pubsub.Topic) (string, error) {
